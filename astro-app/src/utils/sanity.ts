@@ -1,29 +1,40 @@
 import { sanityClient } from "sanity:client";
 import type { PortableTextBlock } from "@portabletext/types";
-import type { ImageAsset, Slug } from "@sanity/types";
+import type { Image, Slug } from "@sanity/types";
 import groq from "groq";
 
-export async function getPosts(): Promise<Post[]> {
+export async function getProjects(): Promise<Project[]> {
   return await sanityClient.fetch(
-    groq`*[_type == "post" && defined(slug.current)] | order(_createdAt desc)`
+    groq`*[_type == "project" && defined(slug.current)] | order(order asc, year desc, _createdAt desc)`
   );
 }
 
-export async function getPost(slug: string): Promise<Post> {
+export async function getProject(slug: string): Promise<Project> {
   return await sanityClient.fetch(
-    groq`*[_type == "post" && slug.current == $slug][0]`,
+    groq`*[_type == "project" && slug.current == $slug][0]`,
     {
       slug,
     }
   );
 }
 
-export interface Post {
-  _type: "post";
+export interface Project {
+  _type: "project";
   _createdAt: string;
   title?: string;
   slug: Slug;
+  year?: number;
+  production?: string;
+  role?: string;
+  collaborators?: string[];
+  materials?: string[];
+  techniques?: string[];
+  tags?: string[];
+  featured?: boolean;
+  order?: number;
   excerpt?: string;
-  mainImage?: ImageAsset & { alt?: string };
-  body: PortableTextBlock[];
+  heroImage?: Image & { alt?: string };
+  gallery?: Array<Image & { alt?: string; caption?: string }>;
+  videoUrl?: string;
+  description?: PortableTextBlock[];
 }

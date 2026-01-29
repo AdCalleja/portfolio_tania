@@ -2,13 +2,181 @@
 import Card from "../components/Card.astro";
 import Welcome from "../components/Welcome.astro";
 import Layout from "../layouts/Layout.astro";
-import { getPosts } from "../utils/sanity";
+import { getProjects } from "../utils/sanity";
 
-const posts = await getPosts();
+const projects = await getProjects();
 ---
 
-<Layout title="Welcome to Astro.">
-  <section>
-    {posts.length ? posts.map((post) => <Card post={post} />) : <Welcome />}
+<Layout title="Tania - Costume Design">
+  <section class="hero">
+    <div class="hero__text">
+      <p class="hero__eyebrow">Costume Design Portfolio</p>
+      <h1 class="hero__title">Stories told in fabric, texture, and silhouette.</h1>
+      <p class="hero__lead">
+        A curated selection of costume design projects spanning film, theatre, and experimental work.
+      </p>
+      <div class="hero__facts">
+        <div>
+          <p class="hero__label">Focus</p>
+          <p class="hero__value">Historical + Contemporary</p>
+        </div>
+        <div>
+          <p class="hero__label">Specialty</p>
+          <p class="hero__value">Character-driven silhouettes</p>
+        </div>
+      </div>
+    </div>
+    <div class="hero__panel" aria-hidden="true">
+      <div class="hero__swatch hero__swatch--one"></div>
+      <div class="hero__swatch hero__swatch--two"></div>
+      <div class="hero__swatch hero__swatch--three"></div>
+      <div class="hero__frame">
+        <span>Textile studies</span>
+        <span>Hand-draped detail</span>
+        <span>Palette exploration</span>
+      </div>
+    </div>
+  </section>
+  <section class="grid">
+    {projects.length ? projects.map((project) => <Card project={project} />) : <Welcome />}
   </section>
 </Layout>
+
+<style>
+  .hero {
+    padding: var(--space-6) var(--space-3) var(--space-5);
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .hero__text {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .hero__eyebrow {
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 12px;
+    color: var(--accent-700);
+    margin: 0;
+  }
+
+  .hero__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(36px, 6vw, 72px);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .hero__lead {
+    font-family: var(--font-family-serif);
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--gray-700);
+    max-width: 620px;
+    margin: 0;
+  }
+
+  .hero__facts {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    padding: var(--space-3);
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 16px 40px rgba(17, 12, 7, 0.08);
+  }
+
+  .hero__label {
+    margin: 0 0 var(--space-1);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+  }
+
+  .hero__value {
+    margin: 0;
+    font-family: var(--font-family-serif);
+    font-size: 16px;
+    color: var(--ink-900);
+  }
+
+  .hero__panel {
+    position: relative;
+    min-height: 280px;
+    border-radius: 28px;
+    overflow: hidden;
+    background: linear-gradient(140deg, rgba(24, 16, 18, 0.95), rgba(58, 35, 41, 0.85));
+    box-shadow: 0 28px 70px rgba(16, 12, 10, 0.28);
+    display: grid;
+    align-items: end;
+    padding: var(--space-4);
+  }
+
+  .hero__swatch {
+    position: absolute;
+    border-radius: 22px;
+    filter: blur(0.4px);
+    opacity: 0.85;
+  }
+
+  .hero__swatch--one {
+    width: 48%;
+    height: 38%;
+    top: 16%;
+    left: 10%;
+    background: linear-gradient(120deg, #c07c5a, #834332);
+  }
+
+  .hero__swatch--two {
+    width: 40%;
+    height: 32%;
+    top: 44%;
+    right: 12%;
+    background: linear-gradient(160deg, #ede2d7, #c9a792);
+  }
+
+  .hero__swatch--three {
+    width: 30%;
+    height: 26%;
+    bottom: 12%;
+    left: 28%;
+    background: linear-gradient(150deg, #3e272c, #1f1416);
+  }
+
+  .hero__frame {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: var(--space-2);
+    color: rgba(255, 255, 255, 0.75);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0 var(--space-3) var(--space-7);
+  }
+
+  @media (min-width: 800px) {
+    .hero {
+      padding: var(--space-8) 0 var(--space-6);
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      align-items: center;
+    }
+
+    .grid {
+      gap: var(--space-5);
+      padding: 0 0 var(--space-8);
+    }
+  }
+</style>

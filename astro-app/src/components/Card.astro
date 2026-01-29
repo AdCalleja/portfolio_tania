@@ -1,99 +1,124 @@
 ---
-import { formatDate } from "../utils";
 import { urlFor } from "../utils/image";
-import type { Post } from "../utils/sanity";
+import type { Project } from "../utils/sanity";
 
 interface Props {
-  post: Post;
+  project: Project;
 }
 
-const { post } = Astro.props;
+const { project } = Astro.props;
 ---
 
-<div class="card">
+<article class="card">
   {
-    post.mainImage ? (
+    project.heroImage ? (
       <img
         class="card__cover"
-        src={urlFor(post.mainImage).width(500).height(300).url()}
-        alt={post.mainImage.alt || ""}
+        src={urlFor(project.heroImage).width(800).height(900).url()}
+        alt={project.heroImage.alt || project.title || ""}
+        loading="lazy"
       />
     ) : (
       <div class="card__cover--none" />
     )
   }
   <div class="card__container">
+    <p class="card__meta">
+      <span>{project.production || "Independent project"}</span>
+      {project.year ? <span>/ {project.year}</span> : null}
+    </p>
     <h3 class="card__title">
       <a
         class="card__link"
-        href={`/post/${post.slug.current}`}
+        href={`/project/${project.slug.current}`}
       >
-        {post.title}
+        {project.title}
       </a>
     </h3>
-    <p class="card__excerpt">{post.excerpt}</p>
-    <p class="card__date">
-      {formatDate(post._createdAt)}
-    </p>
+    {project.excerpt ? <p class="card__excerpt">{project.excerpt}</p> : null}
+    {project.role ? <p class="card__role">{project.role}</p> : null}
   </div>
-</div>
+</article>
 
 <style>
   .card {
     display: flex;
     flex-direction: column;
-    padding: var(--space-2);
-    padding: 9px;
+    gap: var(--space-3);
+    padding: var(--space-3);
     position: relative;
-    border-bottom: 1px solid #ced2d9;
+    border: 1px solid var(--gray-200);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(248, 245, 242, 0.8));
+    backdrop-filter: blur(6px);
+    box-shadow: 0 18px 40px rgba(17, 12, 7, 0.08);
+    animation: card-rise 0.7s ease forwards;
+    opacity: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
     & .card__container {
-      margin: 0 var(--space-1) 0;
+      margin: 0 var(--space-1);
     }
 
     & .card__cover {
       width: 100%;
-      height: 231px;
+      height: 420px;
       object-fit: cover;
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(16, 12, 10, 0.25);
     }
 
     & .card__cover--none {
       width: 100%;
-      height: 231px;
-      background: var(--black);
+      height: 420px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #191314, #2f1f22);
     }
 
     & .card__title {
-      font-family: var(--font-family-sans);
-      font-weight: 800;
-      font-size: var(--font-size-7);
-      line-height: var(--line-height-6);
-      letter-spacing: -0.025em;
-      margin: var(--space-3) 0;
+      font-family: var(--font-family-display);
+      font-weight: 600;
+      font-size: clamp(26px, 3vw, 38px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: var(--space-2) 0 var(--space-1);
     }
 
     & .card__excerpt {
       font-family: var(--font-family-serif);
       font-weight: 400;
-      font-size: var(--font-size-4);
-      line-height: var(--line-height-3);
-      margin-top: 0;
+      font-size: 17px;
+      line-height: 1.7;
+      margin: 0 0 var(--space-2);
+      color: var(--gray-700);
     }
 
-    & .card__date {
-      font-weight: 600;
-      font-family: var(--font-family-sans);
-      font-size: var(--font-size-1);
-      margin-top: calc(var(----space-4) + 7);
+    & .card__meta {
+      display: flex;
+      gap: var(--space-2);
+      font-family: var(--font-family-mono);
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      color: var(--gray-500);
+      margin: 0;
+    }
+
+    & .card__role {
+      font-family: var(--font-family-mono);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-700);
+      margin: 0;
     }
 
     & .card__link {
-      color: var(--black);
+      color: var(--ink-900);
       text-decoration: none;
 
       &:hover {
-        opacity: 0.8;
-        transition: 0.2s;
+        opacity: 0.85;
+        transition: 0.2s ease;
       }
 
       &::before {
@@ -103,28 +128,35 @@ const { post } = Astro.props;
       }
     }
 
-    &:first-child {
-      border-top-left-radius: 3px;
-      border-top-right-radius: 3px;
+    &:nth-child(1) {
+      animation-delay: 0.05s;
     }
 
-    &:last-child {
-      border-bottom-left-radius: 3px;
-      border-bottom-right-radius: 3px;
+    &:nth-child(2) {
+      animation-delay: 0.12s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.18s;
+    }
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 55px rgba(17, 12, 7, 0.15);
     }
   }
 
   @media (min-width: 575px) {
     .card {
-      border: 1px solid #ced2d9;
-      border-bottom: none;
+      padding: var(--space-4);
+    }
+  }
 
-      & .card__title {
-        margin-top: var(--space-4);
-      }
-
-      &:last-child {
-        border-bottom: 1px solid #ced2d9;
+  @media (max-width: 600px) {
+    .card {
+      & .card__cover,
+      & .card__cover--none {
+        height: 320px;
       }
     }
   }
@@ -132,17 +164,30 @@ const { post } = Astro.props;
   @media (min-width: 800px) {
     .card {
       flex-direction: row;
+      align-items: center;
+      gap: var(--space-5);
 
       & .card__container {
-        margin: 0 var(--space-4) 0;
+        margin: 0;
       }
 
       & .card__cover,
       & .card__cover--none {
-        min-width: 366.5px;
-        max-width: 366.5px;
-        max-height: 231px;
+        min-width: 340px;
+        max-width: 340px;
+        height: 420px;
       }
+    }
+  }
+
+  @keyframes card-rise {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 </style>

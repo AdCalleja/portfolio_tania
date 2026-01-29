@@ -1,0 +1,310 @@
+---
+import type { InferGetStaticParamsType } from "astro";
+import { PortableText } from "astro-portabletext";
+import Layout from "../../layouts/Layout.astro";
+import { urlFor } from "../../utils/image";
+import { getProject, getProjects } from "../../utils/sanity";
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { slug: project.slug.current },
+  }));
+}
+
+type Params = InferGetStaticParamsType<typeof getStaticPaths>;
+const { slug } = Astro.params as Params;
+
+const project = await getProject(slug);
+---
+
+<Layout title={`${project.title} - Costume Design`}>
+  <article class="project">
+    <header class="project__header">
+      <p class="project__eyebrow">Costume Design Project</p>
+      <h1 class="project__title">{project.title}</h1>
+      <div class="project__meta">
+        {project.production ? <span>{project.production}</span> : null}
+        {project.role ? <span>{project.role}</span> : null}
+        {project.year ? <span>{project.year}</span> : null}
+      </div>
+      {project.excerpt ? <p class="project__excerpt">{project.excerpt}</p> : null}
+    </header>
+    <section class="project__hero">
+      {
+        project.heroImage ? (
+          <img
+            class="project__hero-image"
+            src={urlFor(project.heroImage).width(1600).height(1200).url()}
+            alt={project.heroImage.alt || project.title || "Project hero image"}
+          />
+        ) : (
+          <div class="project__hero-fallback" />
+        )
+      }
+    </section>
+    <section class="project__content">
+      <div class="project__description">
+        {project.description ? <PortableText value={project.description} /> : null}
+      </div>
+      <aside class="project__details">
+        <div>
+          <h3>Details</h3>
+          <ul>
+            {project.production ? <li><strong>Production:</strong> {project.production}</li> : null}
+            {project.role ? <li><strong>Role:</strong> {project.role}</li> : null}
+            {project.year ? <li><strong>Year:</strong> {project.year}</li> : null}
+            {project.collaborators?.length ? (
+              <li><strong>Collaborators:</strong> {project.collaborators.join(", ")}</li>
+            ) : null}
+          </ul>
+        </div>
+        {project.materials?.length ? (
+          <div>
+            <h3>Materials</h3>
+            <p>{project.materials.join(", ")}</p>
+          </div>
+        ) : null}
+        {project.techniques?.length ? (
+          <div>
+            <h3>Techniques</h3>
+            <p>{project.techniques.join(", ")}</p>
+          </div>
+        ) : null}
+        {project.tags?.length ? (
+          <div>
+            <h3>Tags</h3>
+            <div class="project__tags">
+              {project.tags.map((tag) => <span class="project__tag">{tag}</span>)}
+            </div>
+          </div>
+        ) : null}
+        {project.videoUrl ? (
+          <div>
+            <h3>Video</h3>
+            <a class="project__video" href={project.videoUrl} target="_blank" rel="noopener noreferrer">
+              Watch the clip
+            </a>
+          </div>
+        ) : null}
+      </aside>
+    </section>
+    {project.gallery?.length ? (
+      <section class="project__gallery">
+        {project.gallery.map((image) => (
+          <figure>
+            <img
+              src={urlFor(image).width(1200).height(1400).url()}
+              alt={image.alt || project.title || "Gallery image"}
+              loading="lazy"
+            />
+            {image.caption ? <figcaption>{image.caption}</figcaption> : null}
+          </figure>
+        ))}
+      </section>
+    ) : null}
+  </article>
+</Layout>
+
+<style>
+  .project {
+    width: 100%;
+    margin: var(--space-4) 0 var(--space-6);
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .project__header {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .project__eyebrow {
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-size: 12px;
+    color: var(--accent-700);
+    margin: 0;
+  }
+
+  .project__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(34px, 5vw, 64px);
+    margin: 0;
+  }
+
+  .project__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--gray-500);
+  }
+
+  .project__excerpt {
+    font-family: var(--font-family-serif);
+    font-size: 18px;
+    line-height: 1.8;
+    margin: 0;
+    color: var(--gray-700);
+    max-width: 640px;
+  }
+
+  .project__hero {
+    position: relative;
+  }
+
+  .project__hero-image,
+  .project__hero-fallback {
+    width: 100%;
+    height: clamp(320px, 55vw, 620px);
+    border-radius: 28px;
+    object-fit: cover;
+    box-shadow: 0 24px 70px rgba(16, 12, 10, 0.2);
+  }
+
+  .project__hero-fallback {
+    background: linear-gradient(135deg, #231517, #3a2329);
+  }
+
+  .project__content {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .project__description {
+    font-family: var(--font-family-serif);
+    font-size: 18px;
+    line-height: 1.9;
+    color: var(--ink-900);
+  }
+
+  .project__description :global(p) {
+    margin: 0 0 var(--space-3);
+  }
+
+  .project__description :global(blockquote) {
+    border-left: 4px solid var(--accent-700);
+    padding-left: var(--space-3);
+    margin: var(--space-4) 0;
+    font-style: italic;
+    color: var(--gray-700);
+  }
+
+  .project__description :global(a) {
+    color: var(--accent-700);
+    text-decoration: none;
+  }
+
+  .project__details {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 22px;
+    padding: var(--space-4);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 16px 40px rgba(18, 12, 8, 0.12);
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .project__details h3 {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+
+  .project__details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-2);
+    font-family: var(--font-family-serif);
+  }
+
+  .project__details strong {
+    color: var(--ink-900);
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+
+  .project__details p {
+    margin: 0;
+    font-family: var(--font-family-serif);
+    color: var(--gray-700);
+  }
+
+  .project__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .project__tag {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(139, 67, 38, 0.12);
+    color: var(--accent-700);
+    font-size: 12px;
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  .project__video {
+    display: inline-flex;
+    text-decoration: none;
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--accent-700);
+  }
+
+  .project__gallery {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .project__gallery figure {
+    margin: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .project__gallery img {
+    width: 100%;
+    border-radius: 24px;
+    object-fit: cover;
+    box-shadow: 0 16px 40px rgba(16, 12, 10, 0.18);
+  }
+
+  .project__gallery figcaption {
+    font-family: var(--font-family-serif);
+    font-size: 14px;
+    color: var(--gray-600);
+  }
+
+  @media (min-width: 800px) {
+    .project {
+      gap: var(--space-7);
+    }
+
+    .project__content {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .project__gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

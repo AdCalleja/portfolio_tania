@@ -2,58 +2,20 @@
 ---
 
 <div class="container">
-  <div class="logos">
-    <div class="logos__blur"></div>
-    <img
-      class="logos__entry"
-      src="/astro.svg"
-      alt="Astro Logo"
-    />
-    <span class="logos__plus">+</span>
-    <img
-      class="logos__entry"
-      src="/sanity.svg"
-      alt="Sanity Logo"
-    />
-  </div>
-  <div class="steps">
-    <h2 class="steps__title">Next steps</h2>
-    <ul class="steps__list">
-      <li class="steps__entry">
-        <h3 class="steps__subtitle">Publish a post in your Studio</h3>
-        <p class="steps__text">
-          Visit the <a href="http://localhost:3333/">Sanity Studio</a> and publish a new document of type post.
-        </p>
-      </li>
-      <li class="steps__entry">
-        <h3 class="step__title">Dive into the documentation</h3>
-        <p class="steps__text">
-          Check out{" "}
-          <a
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            href="https://www.sanity.io/docs"
-          >
-            the documentation
-          </a>{" "}
-          to learn more about Sanity.
-        </p>
-      </li>
-      <li class="steps__entry">
-        <h3 class="steps__subtitle">Join the Sanity Community</h3>
-        <p class="steps__text">
-          Leverage{" "}
-          <a
-            target="_blank"
-            rel="noopener noreferrer nofollow"
-            href="https://www.sanity.io/exchange/community"
-          >
-            our awesome community
-          </a>
-          , and share tips and discuss!
-        </p>
-      </li>
-    </ul>
+  <div class="empty">
+    <p class="empty__eyebrow">Portfolio</p>
+    <h2 class="empty__title">No projects yet.</h2>
+    <p class="empty__text">
+      Add your first costume design project in the Studio, then refresh this page to see it appear here.
+    </p>
+    <a
+      class="empty__cta"
+      href="http://localhost:3333/"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Open Sanity Studio
+    </a>
   </div>
 </div>
 
@@ -62,94 +24,55 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: var(--space-2) var(--space-2);
+    padding: var(--space-6) var(--space-3);
   }
 
-  .logos {
-    display: none;
+  .empty {
+    max-width: 520px;
+    text-align: center;
+    padding: var(--space-6) var(--space-4);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 24px 60px rgba(18, 12, 8, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.6);
   }
 
-  .steps {
-    flex-direction: column;
-    width: 100%;
-
-    & .steps__list {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    & .steps__entry {
-      margin-bottom: var(--space-4);
-    }
-
-    & .steps__title {
-      font-size: var(--font-size-5);
-      line-height: var(--line-height-2);
-    }
-
-    & .steps__subtitle {
-      font-size: var(--font-size-3);
-      line-height: var(--line-height-2);
-    }
-
-    & .steps__text {
-      font-family: var(--font-family-serif);
-      line-height: var(--line-height-2);
-
-      & a {
-        color: var(--blue-600);
-        text-decoration: none;
-      }
-    }
+  .empty__eyebrow {
+    font-family: var(--font-family-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 12px;
+    color: var(--accent-700);
+    margin: 0 0 var(--space-3);
   }
 
-  @media (min-width: 575px) {
-    .container {
-      width: 100%;
-    }
+  .empty__title {
+    font-family: var(--font-family-display);
+    font-size: clamp(32px, 4vw, 44px);
+    margin: 0 0 var(--space-2);
+  }
 
-    .logos {
-      display: flex;
-      align-items: center;
-      margin: var(--space-6) 0 var(--space-5) 0;
+  .empty__text {
+    font-family: var(--font-family-serif);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--gray-700);
+    margin: 0 0 var(--space-4);
+  }
 
-      & .logos__blur {
-        display: flex;
-        position: absolute;
-        width: 375px;
-        height: 115px;
-        background: var(--magenta-100);
-        filter: blur(82px);
-        transform: rotate(-19deg);
-        z-index: -1;
-      }
-
-      & .logos__plus {
-        display: flex;
-        font-family: var(--font-family-sans);
-        font-weight: 800;
-        font-size: var(--font-size-7);
-        line-height: var(--line-height-6);
-        margin: 0 var(--space-4);
-      }
-
-      & .logos__entry {
-        display: flex;
-      }
-    }
-
-    .steps {
-      max-width: var(--max-width-0);
-      display: flex;
-      padding: 0;
-
-      & .steps__subtitle {
-        margin-top: var(--space-4);
-      }
-
-      & .steps__list {
-        margin-top: 0;
-      }
-    }
+  .empty__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: var(--accent-700);
+    color: white;
+    box-shadow: 0 12px 24px rgba(139, 67, 38, 0.35);
   }
 </style>

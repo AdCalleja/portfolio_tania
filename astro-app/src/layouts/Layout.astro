@@ -1,6 +1,6 @@
 ---
 // https://docs.astro.build/en/guides/view-transitions/
-import { ViewTransitions } from 'astro:transitions';
+import { ViewTransitions } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -38,7 +38,7 @@ const { title } = Astro.props;
       crossorigin
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=Inter:wght@500;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&family=Source+Serif+4:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
 
@@ -48,11 +48,15 @@ const { title } = Astro.props;
   <body>
     <div class="container">
       <header class="header">
-        <a
-          class="header__title"
-          href="/"
-          >Astro + Sanity</a
-        >
+        <div class="header__brand">
+          <a
+            class="header__title"
+            href="/"
+            >Tania</a
+          >
+          <span class="header__subtitle">Costume designer</span>
+        </div>
+        <div class="header__note">Selected works / Available for collaborations</div>
       </header>
       <main>
         <slot />
@@ -72,7 +76,7 @@ const { title } = Astro.props;
               stroke="currentColor"
               stroke-width="1.2"
             ></path></svg
-          > at Sanity
+          > for storytelling in fabric
         </p>
       </footer>
     </div>
@@ -85,49 +89,75 @@ const { title } = Astro.props;
   }
 
   main {
-    margin-top: 45px;
+    margin-top: 70px;
   }
 
   .header {
     display: flex;
-    padding: 0 var(--space-1);
-    border-bottom: 1px solid #ced2d9;
-
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-3);
+    border-bottom: 1px solid rgba(28, 22, 20, 0.1);
     z-index: 10;
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(8px);
     position: fixed;
     left: 0;
     right: 0;
     top: 0;
 
+    & .header__brand {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+    }
+
     & .header__title {
-      font-weight: 800;
-      font-size: var(--font-size-3);
-      line-height: var(--line-height-1);
-      padding-left: var(--space-2);
-      margin: var(--space-3) 0;
+      font-family: var(--font-family-display);
+      font-weight: 600;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      margin: 0;
       text-decoration: none;
-      color: var(--black);
+      color: var(--ink-900);
+    }
+
+    & .header__subtitle {
+      font-family: var(--font-family-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--gray-500);
+    }
+
+    & .header__note {
+      font-family: var(--font-family-serif);
+      font-size: 14px;
+      color: var(--gray-700);
     }
   }
 
   .footer {
     display: flex;
     justify-content: flex-end;
-    padding: 0 var(--space-3);
+    padding: 0 var(--space-3) var(--space-4);
 
     & .footer__text {
-      font-size: var(--font-size-1);
-      line-height: var(--line-height-1);
+      font-size: 12px;
+      line-height: 1.4;
       display: flex;
       align-items: center;
       gap: 2px;
+      font-family: var(--font-family-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--gray-500);
     }
   }
 
   @media (min-width: 575px) {
     .container {
-      max-width: var(--max-width-1);
+      max-width: 980px;
       padding: 0 var(--space-4);
     }
 
@@ -138,18 +168,18 @@ const { title } = Astro.props;
     .header {
       position: unset;
       border-bottom: none;
-      margin: var(--space-3) 0;
-      padding: var(--space-2) 0;
-      background: unset;
+      margin: var(--space-4) 0 var(--space-3);
+      padding: 0;
+      background: none;
+      backdrop-filter: none;
 
       & .header__title {
-        margin: var(--space-3) 0 var(--space-2);
-        font-size: var(--font-size-5);
+        font-size: 36px;
       }
     }
 
     .footer {
-      margin: var(--space-3) 0;
+      margin: var(--space-5) 0;
     }
   }
 </style>
@@ -167,9 +197,10 @@ const { title } = Astro.props;
     --space-8: 136px;
     --space-9: 220px;
 
-    --font-family-sans: Inter;
-    --font-family-serif: PT Serif;
-    --font-family-mono: IMB Plex Mono;
+    --font-family-sans: "Space Grotesk";
+    --font-family-serif: "Source Serif 4";
+    --font-family-display: "Cormorant Garamond";
+    --font-family-mono: "JetBrains Mono";
 
     --font-size-0: 12px;
     --font-size-1: 14px;
@@ -197,24 +228,51 @@ const { title } = Astro.props;
     --line-height-11: 96px;
     --line-height-12: 128px;
 
-    --white: #fff;
-    --black: #101112;
-    --gray-200: #ced2d9;
-    --gray-600: #6e7683;
-    --blue-600: #1e61cd;
-    --magenta-100: #f9d7eb;
-
-    --max-width-0: 320px;
-    --max-width-1: 768px;
+    --white: #ffffff;
+    --ink-900: #1f1416;
+    --ink-700: #3b2a2d;
+    --gray-500: #6b5a59;
+    --gray-600: #7a6c6b;
+    --gray-700: #5c4f4e;
+    --gray-200: rgba(44, 33, 34, 0.12);
+    --accent-700: #8b4326;
+    --accent-500: #b56a4a;
+    --sand-100: #f8f2ec;
+    --sand-200: #efe6dd;
   }
 
   html {
-    background-color: var(--white);
-    font-family: var(--font-family-sans), var(--font-family-serif), sans-serif;
+    background-color: var(--sand-100);
+    font-family: var(--font-family-sans), sans-serif;
     text-size-adjust: 100%;
   }
 
   body {
     margin: 0;
+    color: var(--ink-900);
+    background:
+      radial-gradient(circle at 20% 10%, rgba(181, 106, 74, 0.15), transparent 42%),
+      radial-gradient(circle at 80% 0%, rgba(59, 42, 45, 0.12), transparent 45%),
+      radial-gradient(circle at 50% 80%, rgba(139, 67, 38, 0.12), transparent 50%),
+      var(--sand-100);
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(
+        120deg,
+        rgba(255, 255, 255, 0.35),
+        rgba(255, 255, 255, 0)
+      );
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 </style>
