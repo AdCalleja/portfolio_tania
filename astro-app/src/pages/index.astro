@@ -8,43 +8,159 @@ const projects = await getProjects();
 ---
 
 <Layout title="Tania - Costume Design">
-  <section class="hero">
-    <div class="hero__text">
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <section class="hero" data-reveal>
+    <div class="hero__text" data-reveal>
       <p class="hero__eyebrow">Costume Design Portfolio</p>
-      <h1 class="hero__title">Stories told in fabric, texture, and silhouette.</h1>
+      <h1 class="hero__title">An immersive archive of costume design in motion.</h1>
       <p class="hero__lead">
-        A curated selection of costume design projects spanning film, theatre, and experimental work.
+        Each project is a study in silhouette, movement, and story. Scroll to experience the work as a
+        living editorial.
       </p>
-      <div class="hero__facts">
-        <div>
-          <p class="hero__label">Focus</p>
-          <p class="hero__value">Historical + Contemporary</p>
-        </div>
-        <div>
-          <p class="hero__label">Specialty</p>
-          <p class="hero__value">Character-driven silhouettes</p>
-        </div>
+      <div class="hero__actions">
+        <span class="hero__cta">Scroll to explore</span>
+        <span class="hero__line"></span>
       </div>
     </div>
-    <div class="hero__panel" aria-hidden="true">
-      <div class="hero__swatch hero__swatch--one"></div>
-      <div class="hero__swatch hero__swatch--two"></div>
-      <div class="hero__swatch hero__swatch--three"></div>
-      <div class="hero__frame">
-        <span>Textile studies</span>
-        <span>Hand-draped detail</span>
-        <span>Palette exploration</span>
+    <div class="hero__visual" aria-hidden="true">
+      <div class="hero__orb" data-parallax data-speed="0.12"></div>
+      <div class="hero__orb hero__orb--soft" data-parallax data-speed="0.2"></div>
+      <div class="hero__frame" data-parallax data-speed="0.08">
+        <span>Fabric studies</span>
+        <span>Layered silhouettes</span>
+        <span>On-set textures</span>
       </div>
     </div>
   </section>
-  <section class="grid">
-    {projects.length ? projects.map((project) => <Card project={project} />) : <Welcome />}
+
+  <section class="marquee" aria-hidden="true">
+    <div class="marquee__track">
+      <span>Costume design</span>
+      <span>Textile research</span>
+      <span>Character worlds</span>
+      <span>Costume design</span>
+      <span>Textile research</span>
+      <span>Character worlds</span>
+    </div>
+  </section>
+
+  <section class="chapters">
+    <div class="chapters__sticky" data-reveal>
+      <p class="chapters__eyebrow">Process</p>
+      <h2>From concept to stage.</h2>
+      <p>
+        Each project moves through story analysis, material exploration, and final fabrication. The
+        page scroll mirrors that progression.
+      </p>
+    </div>
+    <div class="chapters__list">
+      <article class="chapter" data-reveal>
+        <p class="chapter__tag">Act I</p>
+        <h3>Research &amp; Worldbuilding</h3>
+        <p>Archival references, moodboards, and historical silhouettes shape the narrative.</p>
+      </article>
+      <article class="chapter" data-reveal>
+        <p class="chapter__tag">Act II</p>
+        <h3>Material Translation</h3>
+        <p>Textures, dye tests, and layered construction bring character to the surface.</p>
+      </article>
+      <article class="chapter" data-reveal>
+        <p class="chapter__tag">Act III</p>
+        <h3>On-Set Expression</h3>
+        <p>Costumes in motion, refined for storytelling, camera, and performance.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="projects">
+    <header class="projects__header" data-reveal>
+      <p class="projects__eyebrow">Selected Works</p>
+      <h2>Projects that live and breathe on screen and stage.</h2>
+    </header>
+    <div class="projects__grid">
+      {
+        projects.length ? (
+          projects.map((project) => (
+            <div class="projects__card" data-reveal>
+              <Card project={project} />
+            </div>
+          ))
+        ) : (
+          <Welcome />
+        )
+      }
+    </div>
   </section>
 </Layout>
 
+<script is:inline>
+  const root = document.documentElement;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const revealTargets = Array.from(document.querySelectorAll("[data-reveal]"));
+  const parallaxTargets = Array.from(document.querySelectorAll("[data-parallax]"));
+  const progressBar = document.querySelector(".scroll-progress");
+
+  const revealObserver = new IntersectionObserver(
+    (entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+
+  revealTargets.forEach((target, index) => {
+    target.style.transitionDelay = `${Math.min(index * 70, 280)}ms`;
+    if (reduceMotion) {
+      target.classList.add("is-visible");
+    } else {
+      revealObserver.observe(target);
+    }
+  });
+
+  function handleScroll() {
+    const scrollTop = window.scrollY || window.pageYOffset;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+    root.style.setProperty("--scroll-progress", progress.toFixed(4));
+    if (progressBar) {
+      progressBar.style.transform = `scaleX(${progress})`;
+    }
+
+    if (!reduceMotion) {
+      parallaxTargets.forEach((target) => {
+        const speed = Number(target.dataset.speed || 0.1);
+        const rect = target.getBoundingClientRect();
+        const offset = (window.innerHeight - rect.top) * speed * 0.12;
+        target.style.transform = `translateY(${offset}px)`;
+      });
+    }
+  }
+
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  window.addEventListener("resize", handleScroll);
+  handleScroll();
+</script>
+
 <style>
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(0);
+    background: linear-gradient(90deg, var(--accent-700), var(--accent-500));
+    z-index: 20;
+  }
+
   .hero {
-    padding: var(--space-6) var(--space-3) var(--space-5);
+    padding: var(--space-7) var(--space-3) var(--space-6);
     display: grid;
     gap: var(--space-5);
   }
@@ -65,7 +181,7 @@ const projects = await getProjects();
 
   .hero__title {
     font-family: var(--font-family-display);
-    font-size: clamp(36px, 6vw, 72px);
+    font-size: clamp(38px, 6vw, 82px);
     margin: 0;
     letter-spacing: -0.02em;
   }
@@ -73,80 +189,78 @@ const projects = await getProjects();
   .hero__lead {
     font-family: var(--font-family-serif);
     font-size: 18px;
-    line-height: 1.8;
+    line-height: 1.9;
     color: var(--gray-700);
-    max-width: 620px;
     margin: 0;
   }
 
-  .hero__facts {
-    display: grid;
+  .hero__actions {
+    display: flex;
+    align-items: center;
     gap: var(--space-3);
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    padding: var(--space-3);
-    background: rgba(255, 255, 255, 0.72);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 16px 40px rgba(17, 12, 7, 0.08);
-  }
-
-  .hero__label {
-    margin: 0 0 var(--space-1);
     font-family: var(--font-family-mono);
     font-size: 11px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--gray-500);
   }
 
-  .hero__value {
-    margin: 0;
-    font-family: var(--font-family-serif);
-    font-size: 16px;
-    color: var(--ink-900);
+  .hero__cta {
+    display: inline-flex;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(139, 67, 38, 0.25);
+    background: rgba(255, 255, 255, 0.7);
   }
 
-  .hero__panel {
+  .hero__line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(139, 67, 38, 0.6), transparent);
+  }
+
+  .hero__visual {
     position: relative;
-    min-height: 280px;
-    border-radius: 28px;
-    overflow: hidden;
+    min-height: 320px;
+    border-radius: 30px;
     background: linear-gradient(140deg, rgba(24, 16, 18, 0.95), rgba(58, 35, 41, 0.85));
-    box-shadow: 0 28px 70px rgba(16, 12, 10, 0.28);
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(16, 12, 10, 0.28);
     display: grid;
     align-items: end;
     padding: var(--space-4);
   }
 
-  .hero__swatch {
+  .hero__visual::after {
+    content: "";
     position: absolute;
-    border-radius: 22px;
-    filter: blur(0.4px);
+    inset: 0;
+    background:
+      radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.2), transparent 45%),
+      radial-gradient(circle at 75% 40%, rgba(255, 255, 255, 0.1), transparent 50%);
+    mix-blend-mode: screen;
+    opacity: 0.65;
+    pointer-events: none;
+  }
+
+  .hero__orb {
+    position: absolute;
+    width: 46%;
+    height: 46%;
+    top: 10%;
+    left: 8%;
+    border-radius: 30px;
+    background: linear-gradient(120deg, #c07c5a, #834332);
     opacity: 0.85;
   }
 
-  .hero__swatch--one {
-    width: 48%;
-    height: 38%;
-    top: 16%;
-    left: 10%;
-    background: linear-gradient(120deg, #c07c5a, #834332);
-  }
-
-  .hero__swatch--two {
+  .hero__orb--soft {
     width: 40%;
-    height: 32%;
-    top: 44%;
-    right: 12%;
+    height: 35%;
+    top: 50%;
+    left: 50%;
     background: linear-gradient(160deg, #ede2d7, #c9a792);
-  }
-
-  .hero__swatch--three {
-    width: 30%;
-    height: 26%;
-    bottom: 12%;
-    left: 28%;
-    background: linear-gradient(150deg, #3e272c, #1f1416);
+    opacity: 0.9;
   }
 
   .hero__frame {
@@ -154,29 +268,185 @@ const projects = await getProjects();
     z-index: 2;
     display: grid;
     gap: var(--space-2);
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.8);
     font-family: var(--font-family-mono);
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.2em;
   }
 
-  .grid {
+  .marquee {
+    overflow: hidden;
+    border-top: 1px solid rgba(31, 20, 22, 0.12);
+    border-bottom: 1px solid rgba(31, 20, 22, 0.12);
+    background: rgba(255, 255, 255, 0.65);
+  }
+
+  .marquee__track {
+    display: flex;
+    gap: var(--space-6);
+    padding: var(--space-3) 0;
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    animation: marquee 18s linear infinite;
+    width: max-content;
+  }
+
+  .chapters {
+    display: grid;
+    gap: var(--space-6);
+    padding: var(--space-7) var(--space-3);
+  }
+
+  .chapters__sticky {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .chapters__sticky h2 {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(30px, 4vw, 52px);
+  }
+
+  .chapters__sticky p {
+    margin: 0;
+    font-family: var(--font-family-serif);
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--gray-700);
+  }
+
+  .chapters__eyebrow {
+    margin: 0;
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent-700);
+  }
+
+  .chapters__list {
     display: grid;
     gap: var(--space-4);
-    padding: 0 var(--space-3) var(--space-7);
+  }
+
+  .chapter {
+    padding: var(--space-4);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 50px rgba(17, 12, 7, 0.08);
+  }
+
+  .chapter__tag {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-family-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+  }
+
+  .chapter h3 {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-family-display);
+    font-size: 24px;
+  }
+
+  .chapter p {
+    margin: 0;
+    font-family: var(--font-family-serif);
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--gray-700);
+  }
+
+  .projects {
+    padding: var(--space-7) var(--space-3) var(--space-8);
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .projects__header {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .projects__eyebrow {
+    margin: 0;
+    font-family: var(--font-family-mono);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent-700);
+  }
+
+  .projects__header h2 {
+    margin: 0;
+    font-family: var(--font-family-display);
+    font-size: clamp(32px, 5vw, 56px);
+  }
+
+  .projects__grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .projects__card {
+    transform: translateY(14px);
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   @media (min-width: 800px) {
     .hero {
-      padding: var(--space-8) 0 var(--space-6);
       grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
       align-items: center;
+      padding: var(--space-9) 0 var(--space-7);
     }
 
-    .grid {
-      gap: var(--space-5);
-      padding: 0 0 var(--space-8);
+    .chapters {
+      grid-template-columns: minmax(0, 0.6fr) minmax(0, 1fr);
+      align-items: start;
+      padding: var(--space-8) 0;
+    }
+
+    .chapters__sticky {
+      position: sticky;
+      top: 120px;
+    }
+
+    .projects {
+      padding: var(--space-8) 0 var(--space-9);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
     }
   }
 </style>
