@@ -10,18 +10,21 @@ const { project } = Astro.props;
 ---
 
 <article class="card">
-  {
-    project.heroImage ? (
-      <img
-        class="card__cover"
-        src={urlFor(project.heroImage).width(800).height(900).url()}
-        alt={project.heroImage.alt || project.title || ""}
-        loading="lazy"
-      />
-    ) : (
-      <div class="card__cover--none" />
-    )
-  }
+  <div class="card__media">
+    <div class="card__halo"></div>
+    {
+      project.heroImage ? (
+        <img
+          class="card__cover"
+          src={urlFor(project.heroImage).width(900).height(1200).url()}
+          alt={project.heroImage.alt || project.title || ""}
+          loading="lazy"
+        />
+      ) : (
+        <div class="card__cover--none" />
+      )
+    }
+  </div>
   <div class="card__container">
     <p class="card__meta">
       <span>{project.production || "Independent project"}</span>
@@ -37,41 +40,88 @@ const { project } = Astro.props;
     </h3>
     {project.excerpt ? <p class="card__excerpt">{project.excerpt}</p> : null}
     {project.role ? <p class="card__role">{project.role}</p> : null}
+    <a
+      class="card__button"
+      href={`/project/${project.slug.current}`}
+    >
+      View project
+    </a>
   </div>
 </article>
 
 <style>
   .card {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--space-3);
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-4);
     position: relative;
-    border: 1px solid var(--gray-200);
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(248, 245, 242, 0.8));
+    border-radius: 32px;
+    border: 1px solid rgba(201, 216, 187, 0.55);
+    background:
+      radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 55%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(244, 244, 236, 0.7));
     backdrop-filter: blur(6px);
-    box-shadow: 0 18px 40px rgba(17, 12, 7, 0.08);
+    box-shadow: 0 20px 50px rgba(31, 32, 25, 0.1);
     animation: card-rise 0.7s ease forwards;
     opacity: 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      right: -40px;
+      top: -40px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(147, 170, 122, 0.35), transparent 70%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
 
     & .card__container {
-      margin: 0 var(--space-1);
+      margin: 0;
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    & .card__media {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 360px;
+    }
+
+    & .card__halo {
+      position: absolute;
+      width: 80%;
+      height: 80%;
+      border-radius: 999px;
+      background: linear-gradient(140deg, rgba(229, 237, 220, 0.9), rgba(201, 216, 187, 0.6));
+      opacity: 0.8;
+      filter: blur(0.5px);
     }
 
     & .card__cover {
-      width: 100%;
+      width: min(320px, 70vw);
       height: 420px;
       object-fit: cover;
-      border-radius: 18px;
-      box-shadow: 0 16px 40px rgba(16, 12, 10, 0.25);
+      border-radius: 999px;
+      box-shadow: 0 20px 45px rgba(31, 32, 25, 0.18);
+      position: relative;
+      z-index: 1;
+      border: 8px solid rgba(255, 255, 255, 0.7);
     }
 
     & .card__cover--none {
-      width: 100%;
+      width: min(320px, 70vw);
       height: 420px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #191314, #2f1f22);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1b2216, #3f5a35);
+      border: 8px solid rgba(255, 255, 255, 0.7);
+      position: relative;
+      z-index: 1;
     }
 
     & .card__title {
@@ -112,6 +162,27 @@ const { project } = Astro.props;
       margin: 0;
     }
 
+    & .card__button {
+      justify-self: start;
+      text-decoration: none;
+      font-family: var(--font-family-mono);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(63, 90, 53, 0.3);
+      color: var(--ink-900);
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 12px 30px rgba(63, 90, 53, 0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    & .card__button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(63, 90, 53, 0.18);
+    }
+
     & .card__link {
       color: var(--ink-900);
       text-decoration: none;
@@ -142,7 +213,7 @@ const { project } = Astro.props;
 
     &:hover {
       transform: translateY(-6px);
-      box-shadow: 0 24px 55px rgba(17, 12, 7, 0.15);
+      box-shadow: 0 26px 60px rgba(31, 32, 25, 0.16);
     }
   }
 
@@ -156,26 +227,38 @@ const { project } = Astro.props;
     .card {
       & .card__cover,
       & .card__cover--none {
-        height: 320px;
+        height: 340px;
       }
     }
   }
 
-  @media (min-width: 800px) {
+  @media (min-width: 820px) {
     .card {
-      flex-direction: row;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
       align-items: center;
-      gap: var(--space-5);
+      gap: var(--space-6);
+      padding: var(--space-5);
+    }
 
-      & .card__container {
-        margin: 0;
-      }
+    .card:nth-child(even) {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    }
 
+    .card:nth-child(even) .card__media {
+      order: 2;
+    }
+
+    .card:nth-child(even) .card__container {
+      order: 1;
+    }
+  }
+
+  @media (min-width: 980px) {
+    .card {
       & .card__cover,
       & .card__cover--none {
-        min-width: 340px;
-        max-width: 340px;
-        height: 420px;
+        width: 360px;
+        height: 480px;
       }
     }
   }

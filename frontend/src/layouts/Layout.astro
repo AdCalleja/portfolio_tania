@@ -229,16 +229,19 @@ const { title } = Astro.props;
     --line-height-12: 128px;
 
     --white: #ffffff;
-    --ink-900: #1f1416;
-    --ink-700: #3b2a2d;
-    --gray-500: #6b5a59;
-    --gray-600: #7a6c6b;
-    --gray-700: #5c4f4e;
-    --gray-200: rgba(44, 33, 34, 0.12);
-    --accent-700: #8b4326;
-    --accent-500: #b56a4a;
-    --sand-100: #f8f2ec;
-    --sand-200: #efe6dd;
+    --ink-900: #1f2019;
+    --ink-700: #2f3327;
+    --gray-500: #6d6f64;
+    --gray-600: #7c8075;
+    --gray-700: #5b6055;
+    --gray-200: rgba(47, 51, 39, 0.12);
+    --accent-700: #3f5a35;
+    --accent-500: #6f8f63;
+    --sand-100: #f7f4ee;
+    --sand-200: #efe8dc;
+    --leaf-100: #e5eddc;
+    --leaf-200: #c9d8bb;
+    --leaf-400: #93aa7a;
   }
 
   html {
@@ -251,9 +254,9 @@ const { title } = Astro.props;
     margin: 0;
     color: var(--ink-900);
     background:
-      radial-gradient(circle at 20% 10%, rgba(181, 106, 74, 0.15), transparent 42%),
-      radial-gradient(circle at 80% 0%, rgba(59, 42, 45, 0.12), transparent 45%),
-      radial-gradient(circle at 50% 80%, rgba(139, 67, 38, 0.12), transparent 50%),
+      radial-gradient(circle at 15% 5%, rgba(111, 143, 99, 0.18), transparent 42%),
+      radial-gradient(circle at 85% 0%, rgba(63, 90, 53, 0.12), transparent 45%),
+      radial-gradient(circle at 50% 85%, rgba(201, 216, 187, 0.18), transparent 50%),
       var(--sand-100);
     min-height: 100vh;
   }
@@ -262,12 +265,10 @@ const { title } = Astro.props;
     content: "";
     position: fixed;
     inset: 0;
-    background-image: linear-gradient(
-        120deg,
-        rgba(255, 255, 255, 0.35),
-        rgba(255, 255, 255, 0)
-      );
-    opacity: 0.6;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 60%),
+      linear-gradient(120deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0));
+    opacity: 0.8;
     pointer-events: none;
     z-index: -1;
   }

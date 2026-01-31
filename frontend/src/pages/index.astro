@@ -95,55 +95,76 @@ const projects = await getProjects();
 </Layout>
 
 <script is:inline>
-  const root = document.documentElement;
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const revealTargets = Array.from(document.querySelectorAll("[data-reveal]"));
-  const parallaxTargets = Array.from(document.querySelectorAll("[data-parallax]"));
-  const progressBar = document.querySelector(".scroll-progress");
+  const INDEX_STATE_KEY = "__taniaIndexState";
 
-  const revealObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.2 }
-  );
+  function setupIndexAnimations() {
+    const pageRoot = document.querySelector(".hero");
+    if (!pageRoot) return;
 
-  revealTargets.forEach((target, index) => {
-    target.style.transitionDelay = `${Math.min(index * 70, 280)}ms`;
-    if (reduceMotion) {
-      target.classList.add("is-visible");
-    } else {
-      revealObserver.observe(target);
+    const root = document.documentElement;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const revealTargets = Array.from(document.querySelectorAll("[data-reveal]"));
+    const parallaxTargets = Array.from(document.querySelectorAll("[data-parallax]"));
+    const progressBar = document.querySelector(".scroll-progress");
+
+    const state = window[INDEX_STATE_KEY] || {};
+    if (state.revealObserver) {
+      state.revealObserver.disconnect();
     }
-  });
-
-  function handleScroll() {
-    const scrollTop = window.scrollY || window.pageYOffset;
-    const docHeight = document.body.scrollHeight - window.innerHeight;
-    const progress = docHeight > 0 ? scrollTop / docHeight : 0;
-    root.style.setProperty("--scroll-progress", progress.toFixed(4));
-    if (progressBar) {
-      progressBar.style.transform = `scaleX(${progress})`;
+    if (state.scrollHandler) {
+      window.removeEventListener("scroll", state.scrollHandler);
+      window.removeEventListener("resize", state.scrollHandler);
     }
 
-    if (!reduceMotion) {
-      parallaxTargets.forEach((target) => {
-        const speed = Number(target.dataset.speed || 0.1);
-        const rect = target.getBoundingClientRect();
-        const offset = (window.innerHeight - rect.top) * speed * 0.12;
-        target.style.transform = `translateY(${offset}px)`;
-      });
-    }
+    const revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    revealTargets.forEach((target, index) => {
+      target.style.transitionDelay = `${Math.min(index * 70, 280)}ms`;
+      if (reduceMotion) {
+        target.classList.add("is-visible");
+      } else {
+        revealObserver.observe(target);
+      }
+    });
+
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || window.pageYOffset;
+      const docHeight = document.body.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+      root.style.setProperty("--scroll-progress", progress.toFixed(4));
+      if (progressBar) {
+        progressBar.style.transform = `scaleX(${progress})`;
+      }
+
+      if (!reduceMotion) {
+        parallaxTargets.forEach((target) => {
+          const speed = Number(target.dataset.speed || 0.1);
+          const rect = target.getBoundingClientRect();
+          const offset = (window.innerHeight - rect.top) * speed * 0.12;
+          target.style.transform = `translateY(${offset}px)`;
+        });
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+    handleScroll();
+
+    window[INDEX_STATE_KEY] = { revealObserver, scrollHandler: handleScroll };
   }
 
-  window.addEventListener("scroll", handleScroll, { passive: true });
-  window.addEventListener("resize", handleScroll);
-  handleScroll();
+  document.addEventListener("astro:page-load", setupIndexAnimations);
+  setupIndexAnimations();
 </script>
 
 <style>
@@ -155,7 +176,7 @@ const projects = await getProjects();
     width: 100%;
     transform-origin: left;
     transform: scaleX(0);
-    background: linear-gradient(90deg, var(--accent-700), var(--accent-500));
+    background: linear-gradient(90deg, var(--accent-700), var(--leaf-400));
     z-index: 20;
   }
 
@@ -209,26 +230,41 @@ const projects = await getProjects();
     display: inline-flex;
     padding: 8px 16px;
     border-radius: 999px;
-    border: 1px solid rgba(139, 67, 38, 0.25);
-    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(63, 90, 53, 0.25);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 10px 30px rgba(63, 90, 53, 0.08);
   }
 
   .hero__line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, rgba(139, 67, 38, 0.6), transparent);
+    background: linear-gradient(90deg, rgba(63, 90, 53, 0.45), transparent);
   }
 
   .hero__visual {
     position: relative;
     min-height: 320px;
-    border-radius: 30px;
-    background: linear-gradient(140deg, rgba(24, 16, 18, 0.95), rgba(58, 35, 41, 0.85));
+    border-radius: 36px;
+    background:
+      radial-gradient(circle at 65% 30%, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0) 55%),
+      linear-gradient(150deg, #f2efe6 0%, #e0ead6 55%, #cdd8bf 100%);
     overflow: hidden;
-    box-shadow: 0 30px 80px rgba(16, 12, 10, 0.28);
+    box-shadow:
+      0 35px 80px rgba(31, 32, 25, 0.2),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.65);
     display: grid;
     align-items: end;
     padding: var(--space-4);
+  }
+
+  .hero__visual::before {
+    content: "";
+    position: absolute;
+    inset: 18% 20%;
+    border-radius: 999px;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.5), rgba(201, 216, 187, 0.65));
+    box-shadow: inset 0 0 40px rgba(255, 255, 255, 0.7);
+    opacity: 0.8;
   }
 
   .hero__visual::after {
@@ -236,8 +272,8 @@ const projects = await getProjects();
     position: absolute;
     inset: 0;
     background:
-      radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.2), transparent 45%),
-      radial-gradient(circle at 75% 40%, rgba(255, 255, 255, 0.1), transparent 50%);
+      radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.45), transparent 45%),
+      radial-gradient(circle at 75% 40%, rgba(255, 255, 255, 0.25), transparent 55%);
     mix-blend-mode: screen;
     opacity: 0.65;
     pointer-events: none;
@@ -245,21 +281,21 @@ const projects = await getProjects();
 
   .hero__orb {
     position: absolute;
-    width: 46%;
-    height: 46%;
-    top: 10%;
-    left: 8%;
-    border-radius: 30px;
-    background: linear-gradient(120deg, #c07c5a, #834332);
-    opacity: 0.85;
+    width: 54%;
+    height: 50%;
+    top: 6%;
+    left: 6%;
+    border-radius: 999px;
+    background: linear-gradient(130deg, #9ab08b, #5e7c55);
+    opacity: 0.4;
   }
 
   .hero__orb--soft {
-    width: 40%;
-    height: 35%;
-    top: 50%;
-    left: 50%;
-    background: linear-gradient(160deg, #ede2d7, #c9a792);
+    width: 50%;
+    height: 42%;
+    top: 45%;
+    left: 45%;
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.85), rgba(201, 216, 187, 0.6));
     opacity: 0.9;
   }
 
@@ -268,18 +304,23 @@ const projects = await getProjects();
     z-index: 2;
     display: grid;
     gap: var(--space-2);
-    color: rgba(255, 255, 255, 0.8);
+    color: rgba(31, 32, 25, 0.72);
     font-family: var(--font-family-mono);
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.2em;
+    padding: var(--space-3);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(63, 90, 53, 0.2);
+    box-shadow: 0 20px 40px rgba(63, 90, 53, 0.1);
   }
 
   .marquee {
     overflow: hidden;
-    border-top: 1px solid rgba(31, 20, 22, 0.12);
-    border-bottom: 1px solid rgba(31, 20, 22, 0.12);
-    background: rgba(255, 255, 255, 0.65);
+    border-top: 1px solid rgba(47, 51, 39, 0.12);
+    border-bottom: 1px solid rgba(47, 51, 39, 0.12);
+    background: rgba(255, 255, 255, 0.75);
   }
 
   .marquee__track {
@@ -337,9 +378,10 @@ const projects = await getProjects();
   .chapter {
     padding: var(--space-4);
     border-radius: 24px;
-    background: rgba(255, 255, 255, 0.78);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 20px 50px rgba(17, 12, 7, 0.08);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(201, 216, 187, 0.6);
+    box-shadow: 0 18px 40px rgba(47, 51, 39, 0.08);
+    backdrop-filter: blur(6px);
   }
 
   .chapter__tag {
@@ -393,11 +435,24 @@ const projects = await getProjects();
 
   .projects__grid {
     display: grid;
-    gap: var(--space-5);
+    gap: var(--space-7);
   }
 
   .projects__card {
     transform: translateY(14px);
+    position: relative;
+  }
+
+  .projects__card::before {
+    content: "";
+    position: absolute;
+    inset: -40px -20px;
+    border-radius: 48px;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(201, 216, 187, 0.35), transparent 55%),
+      radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.7), transparent 60%);
+    opacity: 0.8;
+    z-index: -1;
   }
 
   [data-reveal] {
