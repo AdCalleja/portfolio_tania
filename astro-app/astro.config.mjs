@@ -18,12 +18,12 @@ import react from "@astrojs/react";
 
 // Change this depending on your hosting provider (Vercel, Netlify etc)
 // https://docs.astro.build/en/guides/server-side-rendering/#adding-an-adapter
-import vercel from "@astrojs/vercel/serverless";
+import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 export default defineConfig({
-  // Hybrid+adapter is required to support embedded Sanity Studio
-  output: "hybrid",
+  // "hybrid" is removed in Astro 5; "static" now behaves the same way.
+  output: "static",
   adapter: vercel({
     runtime: "nodejs20.x",
   }),
@@ -36,6 +36,6 @@ export default defineConfig({
       // `false` if you want to ensure fresh data
       apiVersion: "2024-12-08", // Set to date of setup to use the latest API version
     }),
-    react(), // Required for Sanity Studio
+    //react(), // Required for Sanity Studio
   ],
 });
